@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //resizeToAvoidBottomPadding: false,
+      resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         title: Text("Ortalama Hesapla"),
       ),
@@ -58,12 +58,16 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.add),
       ),
       body: OrientationBuilder(builder: (context, orientation) {
-          return uygulamaGovdesi(orientation);
+        if (orientation == Orientation.portrait) {
+          return uygulamaGovdesi();
+        } else {
+          return uygulamaGovdesiLandscape();
+        }
       }),
     );
   }
 
-  Widget uygulamaGovdesi(var orientation) {
+  Widget uygulamaGovdesi() {
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -74,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
             //color: Colors.pink.shade200,
             child: Form(
               key: formKey,
-              child: orientation == Orientation.portrait ? Column(
+              child: Column(
                 children: <Widget>[
                   TextFormField(
                     decoration: InputDecoration(
@@ -104,8 +108,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     onSaved: (kaydedilecekDeger) {
                       dersAdi = kaydedilecekDeger;
                       setState(() {
-                        tumDersler
-                            .add(Ders(dersAdi, dersHarfDegeri, dersKredi, rastgeleRenkOlustur()));
+                        tumDersler.add(Ders(dersAdi, dersHarfDegeri, dersKredi,
+                            rastgeleRenkOlustur()));
                         ortalama = 0;
                         ortalamayiHesapla();
                       });
@@ -157,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                 ],
-              ) : Text("Mustafa") ,
+              ),
             ),
           ),
 
@@ -165,20 +169,29 @@ class _MyHomePageState extends State<MyHomePage> {
             margin: EdgeInsets.symmetric(vertical: 10),
             height: 70,
             decoration: BoxDecoration(
-              color: Colors.blue.shade300,
+                color: Colors.blue.shade300,
                 border: BorderDirectional(
-              top: BorderSide(color: Colors.blue, width: 2),
-              bottom: BorderSide(color: Colors.blue, width: 2),
-            )),
+                  top: BorderSide(color: Colors.blue, width: 2),
+                  bottom: BorderSide(color: Colors.blue, width: 2),
+                )),
             child: Center(
               child: RichText(
                 textAlign: TextAlign.center,
-                text: TextSpan(
-                  children: [
-                    TextSpan(text: tumDersler.length == 0 ? "Lütfen Ders Ekleyin" : "Ortalama :", style: TextStyle(fontSize: 30, color: Colors.white)),
-                    TextSpan(text: tumDersler.length == 0 ? "" : "${ortalama.toStringAsFixed(2)}", style: TextStyle(fontSize: 40, color: Colors.purple, fontWeight: FontWeight.bold)),
-                  ]
-                ),
+                text: TextSpan(children: [
+                  TextSpan(
+                      text: tumDersler.length == 0
+                          ? "Lütfen Ders Ekleyin"
+                          : "Ortalama :",
+                      style: TextStyle(fontSize: 30, color: Colors.white)),
+                  TextSpan(
+                      text: tumDersler.length == 0
+                          ? ""
+                          : "${ortalama.toStringAsFixed(2)}",
+                      style: TextStyle(
+                          fontSize: 40,
+                          color: Colors.purple,
+                          fontWeight: FontWeight.bold)),
+                ]),
               ),
             ),
           ),
@@ -278,8 +291,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _listeElemanlariniOlustur(BuildContext context, int index) {
-
-    sayac ++;
+    sayac++;
     debugPrint(sayac.toString());
 
     return Dismissible(
@@ -298,9 +310,16 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         margin: EdgeInsets.all(4),
         child: ListTile(
-          leading: Icon(Icons.done, size: 36, color:  tumDersler[index].renk,),
+          leading: Icon(
+            Icons.done,
+            size: 36,
+            color: tumDersler[index].renk,
+          ),
           title: Text(tumDersler[index].ad),
-          trailing: Icon(Icons.keyboard_arrow_right, color:  tumDersler[index].renk,),
+          trailing: Icon(
+            Icons.keyboard_arrow_right,
+            color: tumDersler[index].renk,
+          ),
           subtitle: Text(tumDersler[index].kredi.toString() +
               " Kredi Ders Notu Değer: " +
               tumDersler[index].harfDegeri.toString()),
@@ -310,12 +329,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void ortalamayiHesapla() {
-
     double toplamNot = 0;
     double toplamKredi = 0;
 
-    for(var oankiDers in tumDersler) {
-
+    for (var oankiDers in tumDersler) {
       var kredi = oankiDers.kredi;
       var harfDegeri = oankiDers.harfDegeri;
 
@@ -324,13 +341,163 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     ortalama = toplamNot / toplamKredi;
-
   }
 
   Color rastgeleRenkOlustur() {
+    return Color.fromARGB(150 + Random().nextInt(105), Random().nextInt(255),
+        Random().nextInt(255), Random().nextInt(255));
+  }
 
-    return Color.fromARGB(150 + Random().nextInt(105), Random().nextInt(255), Random().nextInt(255), Random().nextInt(255));
-
+  Widget uygulamaGovdesiLandscape() {
+    return Container(
+        child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                //color: Colors.pink.shade200,
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    children: <Widget>[
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: "Ders Adı",
+                          hintText: "Ders Adını Giriniz",
+                          hintStyle: TextStyle(fontSize: 18),
+                          labelStyle: TextStyle(fontSize: 22),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.purple, width: 2),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.purple, width: 2),
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(10),
+                            ),
+                            borderSide:
+                                BorderSide(color: Colors.purple, width: 2),
+                          ),
+                        ),
+                        validator: (girilenDeger) {
+                          if (girilenDeger.length > 0) {
+                            return null;
+                          } else
+                            return "Ders adı boş olamaz.";
+                        },
+                        onSaved: (kaydedilecekDeger) {
+                          dersAdi = kaydedilecekDeger;
+                          setState(() {
+                            tumDersler.add(Ders(dersAdi, dersHarfDegeri,
+                                dersKredi, rastgeleRenkOlustur()));
+                            ortalama = 0;
+                            ortalamayiHesapla();
+                          });
+                        },
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Container(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<int>(
+                                items: dersKredileriItems(),
+                                value: dersKredi,
+                                onChanged: (secilenKredi) {
+                                  setState(() {
+                                    dersKredi = secilenKredi;
+                                  });
+                                },
+                              ),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 4),
+                            margin: EdgeInsets.only(top: 10),
+                            decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.purple, width: 2),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                          ),
+                          Container(
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<double>(
+                                items: dersHarfDegerleriItems(),
+                                value: dersHarfDegeri,
+                                onChanged: (secilenHarf) {
+                                  setState(() {
+                                    dersHarfDegeri = secilenHarf;
+                                  });
+                                },
+                              ),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 4),
+                            margin: EdgeInsets.only(top: 10),
+                            decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.purple, width: 2),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  margin: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                      color: Colors.blue.shade300,
+                      border: BorderDirectional(
+                        top: BorderSide(color: Colors.blue, width: 2),
+                        bottom: BorderSide(color: Colors.blue, width: 2),
+                      )),
+                  child: Center(
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(children: [
+                        TextSpan(
+                            text: tumDersler.length == 0
+                                ? "Lütfen Ders Ekleyin"
+                                : "Ortalama :",
+                            style:
+                                TextStyle(fontSize: 30, color: Colors.white)),
+                        TextSpan(
+                            text: tumDersler.length == 0
+                                ? ""
+                                : "${ortalama.toStringAsFixed(2)}",
+                            style: TextStyle(
+                                fontSize: 40,
+                                color: Colors.purple,
+                                fontWeight: FontWeight.bold)),
+                      ]),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          flex: 1,
+        ),
+        Expanded(
+          child: Container(
+            child: ListView.builder(
+              itemBuilder: _listeElemanlariniOlustur,
+              itemCount: tumDersler.length,
+            ),
+          ),
+        ),
+      ],
+    ));
   }
 }
 
