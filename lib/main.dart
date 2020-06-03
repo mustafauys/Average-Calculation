@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        accentColor: Colors.orange.shade300,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MyHomePage(),
@@ -56,11 +57,13 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         child: Icon(Icons.add),
       ),
-      body: uygulamaGovdesi(),
+      body: OrientationBuilder(builder: (context, orientation) {
+          return uygulamaGovdesi(orientation);
+      }),
     );
   }
 
-  Widget uygulamaGovdesi() {
+  Widget uygulamaGovdesi(var orientation) {
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -71,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
             //color: Colors.pink.shade200,
             child: Form(
               key: formKey,
-              child: Column(
+              child: orientation == Orientation.portrait ? Column(
                 children: <Widget>[
                   TextFormField(
                     decoration: InputDecoration(
@@ -102,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       dersAdi = kaydedilecekDeger;
                       setState(() {
                         tumDersler
-                            .add(Ders(dersAdi, dersHarfDegeri, dersKredi));
+                            .add(Ders(dersAdi, dersHarfDegeri, dersKredi, rastgeleRenkOlustur()));
                         ortalama = 0;
                         ortalamayiHesapla();
                       });
@@ -154,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ],
                   ),
                 ],
-              ),
+              ) : Text("Mustafa") ,
             ),
           ),
 
@@ -162,6 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
             margin: EdgeInsets.symmetric(vertical: 10),
             height: 70,
             decoration: BoxDecoration(
+              color: Colors.blue.shade300,
                 border: BorderDirectional(
               top: BorderSide(color: Colors.blue, width: 2),
               bottom: BorderSide(color: Colors.blue, width: 2),
@@ -171,8 +175,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 textAlign: TextAlign.center,
                 text: TextSpan(
                   children: [
-                    TextSpan(text: tumDersler.length == 0 ? "Lütfen Ders Ekleyin" : "Ortalama :", style: TextStyle(fontSize: 30, color: Colors.black)),
-                    TextSpan(text: tumDersler.length == 0 ? "" : "${ortalama.toStringAsFixed(2)}", style: TextStyle(fontSize: 30, color: Colors.purple, fontWeight: FontWeight.bold)),
+                    TextSpan(text: tumDersler.length == 0 ? "Lütfen Ders Ekleyin" : "Ortalama :", style: TextStyle(fontSize: 30, color: Colors.white)),
+                    TextSpan(text: tumDersler.length == 0 ? "" : "${ortalama.toStringAsFixed(2)}", style: TextStyle(fontSize: 40, color: Colors.purple, fontWeight: FontWeight.bold)),
                   ]
                 ),
               ),
@@ -182,7 +186,6 @@ class _MyHomePageState extends State<MyHomePage> {
           //DINAMIK LISTE TUTAN CONTAINER
           Expanded(
             child: Container(
-              color: Colors.green.shade200,
               child: ListView.builder(
                 itemBuilder: _listeElemanlariniOlustur,
                 itemCount: tumDersler.length,
@@ -288,9 +291,16 @@ class _MyHomePageState extends State<MyHomePage> {
           ortalamayiHesapla();
         });
       },
-      child: Card(
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: tumDersler[index].renk, width: 2),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        margin: EdgeInsets.all(4),
         child: ListTile(
+          leading: Icon(Icons.done, size: 36, color:  tumDersler[index].renk,),
           title: Text(tumDersler[index].ad),
+          trailing: Icon(Icons.keyboard_arrow_right, color:  tumDersler[index].renk,),
           subtitle: Text(tumDersler[index].kredi.toString() +
               " Kredi Ders Notu Değer: " +
               tumDersler[index].harfDegeri.toString()),
@@ -316,12 +326,19 @@ class _MyHomePageState extends State<MyHomePage> {
     ortalama = toplamNot / toplamKredi;
 
   }
+
+  Color rastgeleRenkOlustur() {
+
+    return Color.fromARGB(150 + Random().nextInt(105), Random().nextInt(255), Random().nextInt(255), Random().nextInt(255));
+
+  }
 }
 
 class Ders {
   String ad;
   double harfDegeri;
   int kredi;
+  Color renk;
 
-  Ders(this.ad, this.harfDegeri, this.kredi);
+  Ders(this.ad, this.harfDegeri, this.kredi, this.renk);
 }
