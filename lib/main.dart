@@ -10,6 +10,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -29,12 +30,13 @@ class _MyHomePageState extends State<MyHomePage> {
   int dersKredi = 1;
   double dersHarfDegeri = 4;
   List<Ders> tumDersler;
+  static int sayac = 0;
+
   var formKey = GlobalKey<FormState>();
   double ortalama = 0;
 
   @override
   void initState() {
-
     super.initState();
     tumDersler = [];
   }
@@ -48,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          if(formKey.currentState.validate()) {
+          if (formKey.currentState.validate()) {
             formKey.currentState.save();
           }
         },
@@ -78,19 +80,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       hintStyle: TextStyle(fontSize: 18),
                       labelStyle: TextStyle(fontSize: 22),
                       enabledBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Colors.purple, width: 2),
+                        borderSide: BorderSide(color: Colors.purple, width: 2),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Colors.purple, width: 2),
+                        borderSide: BorderSide(color: Colors.purple, width: 2),
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(
                           Radius.circular(10),
                         ),
-                        borderSide:
-                            BorderSide(color: Colors.purple, width: 2),
+                        borderSide: BorderSide(color: Colors.purple, width: 2),
                       ),
                     ),
                     validator: (girilenDeger) {
@@ -102,9 +101,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     onSaved: (kaydedilecekDeger) {
                       dersAdi = kaydedilecekDeger;
                       setState(() {
-                        tumDersler.add(Ders(dersAdi, dersHarfDegeri, dersKredi));
+                        tumDersler
+                            .add(Ders(dersAdi, dersHarfDegeri, dersKredi));
+                        ortalama = 0;
+                        ortalamayiHesapla();
                       });
-
                     },
                   ),
                   Row(
@@ -126,8 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             EdgeInsets.symmetric(horizontal: 15, vertical: 4),
                         margin: EdgeInsets.only(top: 10),
                         decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Colors.purple, width: 2),
+                            border: Border.all(color: Colors.purple, width: 2),
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10))),
                       ),
@@ -147,8 +147,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             EdgeInsets.symmetric(horizontal: 15, vertical: 4),
                         margin: EdgeInsets.only(top: 10),
                         decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Colors.purple, width: 2),
+                            border: Border.all(color: Colors.purple, width: 2),
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10))),
                       ),
@@ -162,20 +161,32 @@ class _MyHomePageState extends State<MyHomePage> {
           Container(
             margin: EdgeInsets.symmetric(vertical: 10),
             height: 70,
-            decoration: BoxDecoration (
-              border: BorderDirectional (
-                top: BorderSide(color: Colors.blue, width: 2),
-                bottom: BorderSide(color: Colors.blue, width: 2),
-              )
+            decoration: BoxDecoration(
+                border: BorderDirectional(
+              top: BorderSide(color: Colors.blue, width: 2),
+              bottom: BorderSide(color: Colors.blue, width: 2),
+            )),
+            child: Center(
+              child: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  children: [
+                    TextSpan(text: tumDersler.length == 0 ? "Lütfen Ders Ekleyin" : "Ortalama :", style: TextStyle(fontSize: 30, color: Colors.black)),
+                    TextSpan(text: tumDersler.length == 0 ? "" : "${ortalama.toStringAsFixed(2)}", style: TextStyle(fontSize: 30, color: Colors.purple, fontWeight: FontWeight.bold)),
+                  ]
+                ),
+              ),
             ),
-            child: Center(child: Text("Ortalama : $ortalama")),
           ),
 
           //DINAMIK LISTE TUTAN CONTAINER
           Expanded(
             child: Container(
               color: Colors.green.shade200,
-              child: ListView.builder(itemBuilder: _listeElemanlariniOlustur, itemCount: tumDersler.length,),
+              child: ListView.builder(
+                itemBuilder: _listeElemanlariniOlustur,
+                itemCount: tumDersler.length,
+              ),
             ),
           ),
         ],
@@ -265,14 +276,45 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _listeElemanlariniOlustur(BuildContext context, int index) {
 
-    return Card(
+    sayac ++;
+    debugPrint(sayac.toString());
 
-      child: ListTile(
-        title: Text(tumDersler[index].ad),
-        subtitle: Text(tumDersler[index].kredi.toString() + " Kredi Ders Notu Değer: " + tumDersler[index].harfDegeri.toString()),
+    return Dismissible(
+      key: Key(sayac.toString()),
+      direction: DismissDirection.startToEnd,
+      onDismissed: (direction) {
+        setState(() {
+          tumDersler.removeAt(index);
+          ortalamayiHesapla();
+        });
+      },
+      child: Card(
+        child: ListTile(
+          title: Text(tumDersler[index].ad),
+          subtitle: Text(tumDersler[index].kredi.toString() +
+              " Kredi Ders Notu Değer: " +
+              tumDersler[index].harfDegeri.toString()),
+        ),
       ),
-
     );
+  }
+
+  void ortalamayiHesapla() {
+
+    double toplamNot = 0;
+    double toplamKredi = 0;
+
+    for(var oankiDers in tumDersler) {
+
+      var kredi = oankiDers.kredi;
+      var harfDegeri = oankiDers.harfDegeri;
+
+      toplamNot = toplamNot + (harfDegeri * kredi);
+      toplamKredi += kredi;
+    }
+
+    ortalama = toplamNot / toplamKredi;
+
   }
 }
 
