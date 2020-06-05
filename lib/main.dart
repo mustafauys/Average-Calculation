@@ -210,7 +210,23 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  
+  List<DropdownMenuItem<int>> dersKredileriItems() {
+    List<DropdownMenuItem<int>> krediler = [];
+
+    for (int i = 1; i <= 12; i++) {
+//     var aa = DropdownMenuItem<int>(value: i, child: Text("$i Kredi"),)
+//     krediler.add(aa);
+      krediler.add(DropdownMenuItem<int>(
+        value: i,
+        child: Text(
+          "$i Kredi",
+          style: TextStyle(fontSize: 20),
+        ),
+      ));
+    }
+
+    return krediler;
+  }
 
   List<DropdownMenuItem<double>> dersHarfDegerleriItems() {
     List<DropdownMenuItem<double>> harfler = [];
