@@ -1,6 +1,6 @@
 # com
 
-Dinamik olarak ortalama hesaplama program
+Dinamik olarak ortalama hesaplama programı
 
 ## Getting Started
 
