@@ -10,10 +10,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: ,
       theme: ThemeData(
         primarySwatch: Colors.blue,
-        accentColor: Colors.orange.shade300,
+        accentColor: Colors.orange.shade200,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MyHomePage(),
@@ -28,7 +28,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String dersAdi;
-  int dersKredi = 1;
+  int dersKredi = 0;
   double dersHarfDegeri = 4;
   List<Ders> tumDersler;
   static int sayac = 0;
