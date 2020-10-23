@@ -102,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       if (girilenDeger.length > 0) {
                         return null;
                       } else
-                        return "";
+                        return "Ders adı boş olamaz.";
                     },
                     onSaved: (kaydedilecekDeger) {
                       dersAdi = kaydedilecekDeger;
