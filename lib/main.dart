@@ -72,7 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          //STATIC FORMU TUTAN CONTAINER
           Container(
             padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
             //color: Colors.pink.shade200,
@@ -103,7 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       if (girilenDeger.length > 0) {
                         return null;
                       } else
-                        return "Ders adı boş olamaz.";
+                        return "";
                     },
                     onSaved: (kaydedilecekDeger) {
                       dersAdi = kaydedilecekDeger;
