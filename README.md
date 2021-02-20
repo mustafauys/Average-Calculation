@@ -1,1 +1,1 @@
-# Dinamik Not Ortalama Hesaplama
+
